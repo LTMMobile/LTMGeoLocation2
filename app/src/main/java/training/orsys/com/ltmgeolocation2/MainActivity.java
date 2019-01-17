@@ -112,9 +112,19 @@ public class MainActivity extends AppCompatActivity {
         b_geolocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _locationListener);
-                _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _locationListener);
-            }
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+
+                    _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _locationListener);
+                    _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _locationListener);
+                }
+                else {
+                    TextView permission = (TextView)findViewById(R.id.label_permission);
+                    permission.setText("Permission non donnée");
+                }
+                }
         });
     }
 
