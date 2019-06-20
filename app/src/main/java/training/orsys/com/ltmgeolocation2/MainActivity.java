@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationChanged( Location location ) {
                 Log.v( "ltm", "onLocationChanged" );
 
-                latitude.setText( String.format("Latitude : %f", location.getLatitude()) );
-                longitude.setText( String.format("Longitude : %f", location.getLongitude()) );
-                altitude.setText( String.format("Altitude : %f", location.getAltitude()) );
+                latitude.setText( String.format(Locale.getDefault(), "Latitude : %f", location.getLatitude()) );
+                longitude.setText( String.format(Locale.getDefault(),"Longitude : %f", location.getLongitude()) );
+                altitude.setText( String.format(Locale.getDefault(),"Altitude : %f", location.getAltitude()) );
 
                 // geocoding ... need internet connection
                 Geocoder myLocation = new Geocoder( MainActivity.this, Locale.getDefault() );
