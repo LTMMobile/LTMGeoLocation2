@@ -2,9 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
+
     defaultConfig {
         applicationId "training.orsys.com.ltmgeolocation2"
-        minSdkVersion 23
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -27,7 +28,7 @@ android {
 
     productFlavors {
         demo {
-             dimension "version"
+            dimension "version"
             applicationIdSuffix ".demo"
             versionNameSuffix "-demo"
         }

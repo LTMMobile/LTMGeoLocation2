@@ -8,6 +8,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,28 +35,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        _locationManager = (LocationManager)this.getSystemService( Context.LOCATION_SERVICE );
+        _locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
 
-        latitude = (TextView)findViewById( R.id.label_latitude );
-        longitude = (TextView)findViewById( R.id.label_longitude );
-        altitude = (TextView)findViewById( R.id.label_altitude );
+        latitude = findViewById( R.id.label_latitude ); // UI
+        longitude = findViewById( R.id.label_longitude );
+        altitude = findViewById( R.id.label_altitude );
 
         // Define a listener that responds to location updates
         _locationListener = new LocationListener() {
             public void onLocationChanged( Location location ) {
                 Log.v( "ltm", "onLocationChanged" );
 
-                latitude.setText( "Latitude : " + Double.valueOf( location.getLatitude() ).toString() );
-                longitude.setText( "Longitude : " + Double.valueOf( location.getLongitude() ).toString() );
-                altitude.setText( "Altitude : " + Double.valueOf( location.getAltitude() ).toString() );
+                latitude.setText( String.format("Latitude : %f", location.getLatitude()) );
+                longitude.setText( String.format("Longitude : %f", location.getLongitude()) );
+                altitude.setText( String.format("Altitude : %f", location.getAltitude()) );
 
                 // geocoding ... need internet connection
                 Geocoder myLocation = new Geocoder( MainActivity.this, Locale.getDefault() );
 
-                TextView geocode = (TextView)findViewById(R.id.label_geocoding);
+                TextView geocode = findViewById(R.id.label_geocoding);
 
                 try {
-                    List<Address> myList = myLocation.getFromLocation( location.getLatitude(), location.getLongitude(), 1 );
+                    List<Address> myList = myLocation.getFromLocation( location.getLatitude(), location.getLongitude(), 4 );
                     Log.v( "ltm", "myList = " + myList.toString() );
                     geocode.setText(myList.toString());
                 } catch (IOException e) {
@@ -76,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        // boutons
-        Button b_request = (Button)findViewById(R.id.button_request);
+        // Boutons
+        Button b_request = findViewById(R.id.button_request);
         b_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,29 +87,23 @@ public class MainActivity extends AppCompatActivity {
                         && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
 
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        /*new AlertDialog.Builder(MainActivity.this).setCancelable(true).setIcon(R.mipmap.ic_launcher)
-                                .setMessage("Nous avons besoin de votre autorisation")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                }).create()
-                                .show();*/
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    && ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+
                     }else {
                         //...
                     }
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
 
                 }else {
-                    TextView permission = (TextView)findViewById(R.id.label_permission);
+                    TextView permission = findViewById(R.id.label_permission);
                     permission.setText("Permission donnée");
                 }
             }
         });
 
-        Button b_geolocation = (Button)findViewById(R.id.button_geolocation);
+        Button b_geolocation = findViewById(R.id.button_geolocation);
         b_geolocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,28 +112,35 @@ public class MainActivity extends AppCompatActivity {
                         && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
 
-                    _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _locationListener);
-                    _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _locationListener);
+                    try {
+                        _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _locationListener);
+                        _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _locationListener);
+                    }catch(IllegalArgumentException ex){
+                        ex.printStackTrace();
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
                 else {
-                    TextView permission = (TextView)findViewById(R.id.label_permission);
+                    TextView permission = findViewById(R.id.label_permission);
                     permission.setText("Permission non donnée");
                 }
                 }
         });
     }
 
-    // Callback de requête de permission dynamique
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        //if( requestCode == 0) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if( grantResults.length > 0 && requestCode == 1 ){
             //...
-            Log.v("ltm", "callback reçue : " + permissions[0].toString() );
-            TextView permission = (TextView)findViewById(R.id.label_permission);
+            Log.v("ltm", "callback reçue : " + permissions[0]);
+            TextView permission = findViewById(R.id.label_permission);
             permission.setText("Permission donnée");
         }
     }
+
 }
 
 
