@@ -23,8 +23,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LocationManager _locationManager = null;
-    private LocationListener _locationListener = null;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     private TextView latitude;
     private TextView longitude;
@@ -35,14 +35,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        _locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
+        locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
 
-        latitude = findViewById( R.id.label_latitude ); // UI
+        latitude = findViewById( R.id.label_latitude ); // java objects created from UI in xml
         longitude = findViewById( R.id.label_longitude );
         altitude = findViewById( R.id.label_altitude );
 
         // Define a listener that responds to location updates
-        _locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             public void onLocationChanged( Location location ) {
                 Log.v( "ltm", "onLocationChanged" );
 
@@ -51,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
                 altitude.setText( String.format(Locale.getDefault(),"Altitude : %f", location.getAltitude()) );
 
                 // geocoding ... need internet connection
-                Geocoder myLocation = new Geocoder( MainActivity.this, Locale.getDefault() );
+                Geocoder geocoder = new Geocoder( MainActivity.this, Locale.getDefault() );
 
                 TextView geocode = findViewById(R.id.label_geocoding);
 
                 try {
-                    List<Address> myList = myLocation.getFromLocation( location.getLatitude(), location.getLongitude(), 4 );
+                    List<Address> myList = geocoder.getFromLocation( location.getLatitude(), location.getLongitude(), 10 );
                     Log.v( "ltm", "myList = " + myList.toString() );
                     geocode.setText(myList.toString());
                 } catch (IOException e) {
@@ -113,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
                         == PackageManager.PERMISSION_GRANTED) {
 
                     try {
-                        _locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, _locationListener);
-                        _locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, _locationListener);
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
                     }catch(IllegalArgumentException ex){
                         ex.printStackTrace();
                     }catch(Exception ex){
