@@ -2,17 +2,22 @@ package training.orsys.com.ltmgeolocation2;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,19 +26,27 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GestureDetector.OnDoubleTapListener,
+        GestureDetector.OnGestureListener {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private GestureDetectorCompat gestureDetector;
 
     private TextView latitude;
     private TextView longitude;
     private TextView altitude;
+    private double latitudeVal;
+    private double longitudeVal;
+    private double altitudeVal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // GestureDectector
+        gestureDetector = new GestureDetectorCompat(this,this);
 
         locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
 
@@ -45,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new LocationListener() {
             public void onLocationChanged( Location location ) {
                 Log.v( "ltm", "onLocationChanged" );
+
+                altitudeVal = location.getAltitude();
+                latitudeVal = location.getLatitude();
+                longitudeVal = location.getLongitude();
 
                 latitude.setText( String.format(Locale.getDefault(), "Latitude : %f", location.getLatitude()) );
                 longitude.setText( String.format(Locale.getDefault(),"Longitude : %f", location.getLongitude()) );
@@ -87,12 +104,12 @@ public class MainActivity extends AppCompatActivity {
                         && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
 
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    /*if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                     && ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
                     }else {
                         //...
-                    }
+                    }*/
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
 
@@ -141,6 +158,65 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // implements GestureDetector.OnDoubleTapListener
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        if( latitudeVal != 0.0 && longitudeVal != 0.0 ) {
+            String t = String.format( Locale.getDefault(), "geo:%f,%f", latitudeVal, longitudeVal);
+            Log.v("ltm", t );
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(t));
+            startActivity(i);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(this.gestureDetector.onTouchEvent(event))
+            return true;
+
+        return super.onTouchEvent(event);
+    }
 }
 
 
