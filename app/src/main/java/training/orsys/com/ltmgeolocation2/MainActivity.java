@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 TextView geocode = findViewById(R.id.label_geocoding);
 
                 try {
-                    List<Address> myList = geocoder.getFromLocation( location.getLatitude(), location.getLongitude(), 10 );
+                    List<Address> myList = geocoder.getFromLocation( location.getLatitude(), location.getLongitude(), 1 );
                     Log.v( "ltm", "myList = " + myList.toString() );
                     geocode.setText(myList.toString());
                 } catch (IOException e) {
@@ -161,11 +162,12 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     // implements GestureDetector.OnDoubleTapListener
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
+        Toast.makeText(this, "DoubleTap detected", Toast.LENGTH_SHORT);
         if( latitudeVal != 0.0 && longitudeVal != 0.0 ) {
             String t = String.format( Locale.getDefault(), "geo:%f,%f", latitudeVal, longitudeVal);
             Log.v("ltm", t );
@@ -192,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+        Toast.makeText(this, "SingleTapUp detected", Toast.LENGTH_SHORT).show();
         return false;
     }
 
