@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                     }*/
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+                    //....
 
                 }else {
                     TextView permission = findViewById(R.id.label_permission);
@@ -151,11 +152,14 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if( grantResults.length > 0 && requestCode == 1 ){
+        if( grantResults.length > 0 && requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
             //...
             Log.v("ltm", "callback reçue : " + permissions[0]);
             TextView permission = findViewById(R.id.label_permission);
             permission.setText("Permission donnée");
+        }if( grantResults.length > 0 && requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED ){
+            TextView permission = findViewById(R.id.label_permission);
+            permission.setText("Permission refusée");
         }
     }
 
