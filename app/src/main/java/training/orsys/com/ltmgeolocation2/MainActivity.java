@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // GestureDectector
+        // GestureDetector
         gestureDetector = new GestureDetectorCompat(this,this);
 
         locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
                     try {
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
+                        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
                     }catch(IllegalArgumentException ex){
                         ex.printStackTrace();
                     }catch(Exception ex){
