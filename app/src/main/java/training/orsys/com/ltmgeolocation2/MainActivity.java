@@ -10,7 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+//import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             }
         };
 
-        // Boutons
+        // Bouton demande permission
         Button b_request = findViewById(R.id.button_request);
         b_request.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,16 +103,8 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
 
-                    /*if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    && ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-                    }else {
-                        //...
-                    }*/
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                     //ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
-                    //....
-
                 }else {
                     TextView permission = findViewById(R.id.label_permission);
                     permission.setText("Permission donnée");
@@ -128,11 +120,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                         == PackageManager.PERMISSION_GRANTED) {
 
                     try {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
-                        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
                     }catch(IllegalArgumentException ex){
-                        ex.printStackTrace();
-                    }catch(Exception ex){
                         ex.printStackTrace();
                     }
                 }
@@ -145,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if( grantResults.length > 0 && requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
