@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         longitude = findViewById( R.id.label_longitude );
         altitude = findViewById( R.id.label_altitude );
 
+        List<String> tabProviders = locationManager.getAllProviders();
+        Log.v("ltm", tabProviders.toString());
+
         // Define a listener that responds to location updates
         locationListener = new LocationListener() {
             public void onLocationChanged( Location location ) {
