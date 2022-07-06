@@ -11,9 +11,15 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 //import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+//import androidx.appcompat.app.Gest
+
+//import android.support.v4.app.ActivityCompat;
+//import android.support.v4.view.GestureDetectorCompat;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -32,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private GestureDetectorCompat gestureDetector;
+    //private GestureDetectorCompat gestureDetector;
 
     private TextView latitude;
     private TextView longitude;
@@ -47,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         setContentView(R.layout.activity_main);
 
         // GestureDetector
-        gestureDetector = new GestureDetectorCompat(this,this);
+        //gestureDetector = new GestureDetectorCompat(this,this);
 
         locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
 
@@ -103,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         b_request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
 
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -208,28 +214,9 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(this.gestureDetector.onTouchEvent(event))
-            return true;
+        /*if(this.gestureDetector.onTouchEvent(event))
+            return true;*/
 
         return super.onTouchEvent(event);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
