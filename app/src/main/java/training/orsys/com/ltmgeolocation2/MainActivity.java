@@ -10,35 +10,26 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-//import android.support.annotation.NonNull;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-//import androidx.appcompat.app.Gest
-
-//import android.support.v4.app.ActivityCompat;
-//import android.support.v4.view.GestureDetectorCompat;
-//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements GestureDetector.OnDoubleTapListener,
-        GestureDetector.OnGestureListener {
+public class MainActivity extends AppCompatActivity  {
 
-    private LocationManager locationManager;
+    private LocationManager locationManager = null;
     private LocationListener locationListener;
-    //private GestureDetectorCompat gestureDetector;
 
     private TextView latitude;
     private TextView longitude;
@@ -48,14 +39,30 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     private double altitudeVal;
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu1, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.bouton_map) {
+            if( latitudeVal != 0.0 && longitudeVal != 0.0 ) {
+                String t = String.format( Locale.getDefault(), "geo:%f,%f", latitudeVal, longitudeVal);
+                Log.v("ltm", t );
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(t));
+                startActivity(i);
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // GestureDetector
-        //gestureDetector = new GestureDetectorCompat(this,this);
-
-        locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
+        this.locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
 
         latitude = findViewById( R.id.label_latitude ); // java objects created from UI in xml
         longitude = findViewById( R.id.label_longitude );
@@ -156,67 +163,5 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             TextView permission = findViewById(R.id.label_permission);
             permission.setText("Permission refusée");
         }
-    }
-
-    // implements GestureDetector.OnDoubleTapListener
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        Toast.makeText(this, "DoubleTap detected", Toast.LENGTH_SHORT);
-        if( latitudeVal != 0.0 && longitudeVal != 0.0 ) {
-            String t = String.format( Locale.getDefault(), "geo:%f,%f", latitudeVal, longitudeVal);
-            Log.v("ltm", t );
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(t));
-            startActivity(i);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        Toast.makeText(this, "SingleTapUp detected", Toast.LENGTH_SHORT).show();
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        /*if(this.gestureDetector.onTouchEvent(event))
-            return true;*/
-
-        return super.onTouchEvent(event);
     }
 }
