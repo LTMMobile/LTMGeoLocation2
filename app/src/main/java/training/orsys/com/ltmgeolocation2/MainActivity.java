@@ -6,14 +6,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.GnssAntennaInfo;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.location.LocationListenerCompat;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,9 +30,9 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-
+import java.util.Vector;
+/** */
 public class MainActivity extends AppCompatActivity  {
-
     private LocationManager locationManager = null;
     private LocationListener locationListener;
 
@@ -38,31 +43,14 @@ public class MainActivity extends AppCompatActivity  {
     private double longitudeVal;
     private double altitudeVal;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu1, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.bouton_map) {
-            if( latitudeVal != 0.0 && longitudeVal != 0.0 ) {
-                String t = String.format( Locale.getDefault(), "geo:%f,%f", latitudeVal, longitudeVal);
-                Log.v("ltm", t );
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(t));
-                startActivity(i);
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // this <-> Context
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.locationManager = (LocationManager)getSystemService( Context.LOCATION_SERVICE );
+        this.locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 
         latitude = findViewById( R.id.label_latitude ); // java objects created from UI in xml
         longitude = findViewById( R.id.label_longitude );
@@ -71,8 +59,8 @@ public class MainActivity extends AppCompatActivity  {
         List<String> tabProviders = locationManager.getAllProviders();
         Log.v("ltm", tabProviders.toString());
 
-        // Define a listener that responds to location updates
-        locationListener = new LocationListener() {
+         // Define a listener that responds to location updates
+        locationListener = new LocationListenerCompat() {
             public void onLocationChanged( Location location ) {
                 Log.v( "ltm", "onLocationChanged" );
 
@@ -86,14 +74,13 @@ public class MainActivity extends AppCompatActivity  {
 
                 // geocoding ... need internet connection
                 Geocoder geocoder = new Geocoder( MainActivity.this, Locale.getDefault() );
-
                 TextView geocode = findViewById(R.id.label_geocoding);
 
                 try {
-                    List<Address> myList = geocoder.getFromLocation( location.getLatitude(), location.getLongitude(), 1 );
+                    List<Address> myList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     Log.v( "ltm", "myList = " + myList.toString() );
                     geocode.setText(myList.toString());
-                } catch (IOException e) {
+                }catch (IOException e) {
                     geocode.setText(e.getLocalizedMessage());
                 }
             }
@@ -120,7 +107,7 @@ public class MainActivity extends AppCompatActivity  {
                         != PackageManager.PERMISSION_GRANTED) {
 
                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                    //ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
                 }else {
                     TextView permission = findViewById(R.id.label_permission);
                     permission.setText("Permission donnée");
@@ -148,6 +135,25 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu1, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.bouton_map) {
+            if( latitudeVal != 0.0 && longitudeVal != 0.0 ) {
+                String t = String.format( Locale.getDefault(), "geo:%f,%f", latitudeVal, longitudeVal);
+                Log.v("ltm", t );
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(t));
+                startActivity(i);
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
